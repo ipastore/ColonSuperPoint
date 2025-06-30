@@ -68,6 +68,11 @@ def add_keypoint_map(data):
         kp = tf.minimum(tf.to_int32(tf.round(data['keypoints'])), image_shape-1)
         kmap = tf.scatter_nd(
                 kp, tf.ones([tf.shape(kp)[0]], dtype=tf.int32), image_shape)
+        
+        mask = data.get('mask', None)
+        if mask is not None:
+            kmap = tf.where(mask, kmap, tf.zeros_like(kmap))
+
     return {**data, 'keypoint_map': kmap}
 
 
@@ -98,3 +103,40 @@ def ratio_preserving_resize(image, **config):
     image = tf.image.resize_images(image, tf.to_int32(new_size),
                                    method=tf.image.ResizeMethod.BILINEAR)
     return tf.image.resize_image_with_crop_or_pad(image, target_size[0], target_size[1])
+
+def colonoscopy_preprocess(image, **config):
+    """Process colonoscopy images by cropping borders and standardizing dimensions.
+    
+    Args:
+        image: Input image tensor [H, W, C]
+        config: Configuration dictionary containing preprocessing parameters
+        
+    Returns:
+        Processed image tensor
+    """
+    # Center crop to standardized dimensions (994, 1344)
+    target_height = 992
+    target_width = 1344
+
+    # Calculate center crop offsets
+    image_shape = tf.shape(image)
+    image_height, image_width = image_shape[0], image_shape[1]
+    offset_height = (image_height - target_height) // 2
+    offset_width = (image_width - target_width) // 2
+
+ 
+    # Apply center crop
+    image = tf.image.crop_to_bounding_box(
+        image, offset_height, offset_width, 
+        target_height, 
+        target_width)
+
+    # Optionally resize to half size
+    if config.get('half_resolution', False):
+        new_height = target_height // 2
+        new_width = target_width // 2
+        image = tf.image.resize_images(
+            image, [new_height, new_width], 
+            method=tf.image.ResizeMethod.BILINEAR)
+    
+    return image

@@ -20,7 +20,7 @@ if __name__ == '__main__':
     experiment_name = args.experiment_name
     export_name = args.export_name if args.export_name else experiment_name
     with open(args.config, 'r') as f:
-        config = yaml.load(f)
+        config = yaml.load(f, Loader=yaml.Loader)
     assert 'eval_iter' in config
 
     output_dir = Path(EXPER_PATH, 'outputs/{}/'.format(export_name))

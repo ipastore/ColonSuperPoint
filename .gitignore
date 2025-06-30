@@ -2,5 +2,15 @@ env/
 __pycache__/
 *.egg-info/
 settings.py
-datasets/Dataset_II/
-datasets/dataset_001_002/
+ColonExperiments/datasets/Dataset_II/*
+ColonExperiments/datasets/dataset_001_002/*
+ColonExperiments/datasets/endomapper_train/*
+ColonExperiments/datasets/HPatches/*
+ColonExperiments/experiments/outputs/*
+weights/*
+ColonExperiments/notebooks/warped_pairs/
+saved_models/*
+ColonExperiments/experiments/*
+weights/*
+.github/instructions/instructions.instructions.md
+weights/superpoint_v6_from_tf.pth

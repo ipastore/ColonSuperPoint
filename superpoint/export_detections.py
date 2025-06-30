@@ -4,6 +4,9 @@ import argparse
 import yaml
 from pathlib import Path
 from tqdm import tqdm
+import warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
+import pdb
 
 import experiment
 from superpoint.settings import EXPER_PATH
@@ -22,7 +25,7 @@ if __name__ == '__main__':
     export_name = args.export_name if args.export_name else experiment_name
     batch_size = args.batch_size
     with open(args.config, 'r') as f:
-        config = yaml.load(f)
+        config = yaml.load(f, Loader=yaml.Loader)
     assert 'eval_iter' in config
 
     output_dir = Path(EXPER_PATH, 'outputs/{}/'.format(export_name))
@@ -63,6 +66,31 @@ if __name__ == '__main__':
                 pred = {'points': [np.array(np.where(e)).T for e in p]}
             else:
                 pred = net.predict(data, keys='*', batch=True)
+
+            # TODO colon superpoint: Filter with mask
+            mask_tuple = data.get('mask', None)
+            if mask_tuple is not None and 'points' in pred:
+                # convert each element to numpy bool array [H, W]
+                mask_tuple = [np.squeeze(np.asarray(m)).astype(bool)
+                              for m in mask_tuple]
+
+                for b in range(len(pred['points'])):
+                    pts = pred['points'][b]          # (N, 2)  row-col order
+                    if pts.size == 0:
+                        continue
+
+                    rows = pts[:, 0].astype(np.int32)
+                    cols = pts[:, 1].astype(np.int32)
+                    keep = mask_tuple[b][rows, cols]      # boolean mask
+
+                    # keep only valid detections
+                    print(f"Filtering {len(pts)} detections to {np.sum(keep)} valid detections")
+                    pred['points'][b] = pts[keep]
+
+                    if 'descriptors' in pred:
+                        pred['descriptors'][b] = pred['descriptors'][b][keep]
+                    if 'scores' in pred:
+                        pred['scores'][b] = pred['scores'][b][keep]
 
             # Export
             d2l = lambda d: [dict(zip(d, e)) for e in zip(*d.values())]  # noqa: E731

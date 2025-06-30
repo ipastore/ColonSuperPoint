@@ -38,7 +38,7 @@ if __name__ == '__main__':
     parser.add_argument('config', type=str, default=None)
     args = parser.parse_args()
     with open(args.config, 'r') as f:
-        config = yaml.load(f)
+        config = yaml.load(f, Loader=yaml.Loader)
 
     base_path = Path(DATA_PATH, 'COCO/val2014/')
     image_paths = list(base_path.iterdir())

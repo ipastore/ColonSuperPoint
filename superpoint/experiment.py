@@ -57,9 +57,13 @@ def set_seed(seed):
     tf.set_random_seed(seed)
     np.random.seed(seed)
 
-
+# HARDCODED for Ubuntu, whn CUDA_VISIBLE_DEVICES is not set
 def get_num_gpus():
-    return len(os.environ['CUDA_VISIBLE_DEVICES'].split(','))
+    if 'CUDA_VISIBLE_DEVICES' in os.environ:
+        devices = os.environ['CUDA_VISIBLE_DEVICES'].split(',')
+        return len([d for d in devices if d.strip()])
+    else:
+        return 1  # Default to 1 GPU
 
 
 @contextmanager
@@ -150,7 +154,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     with open(args.config, 'r') as f:
-        config = yaml.load(f)
+        config = yaml.load(f, Loader=yaml.Loader)
     output_dir = os.path.join(EXPER_PATH, args.exper_name)
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
