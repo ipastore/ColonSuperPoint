@@ -195,7 +195,7 @@ class SyntheticShapes(BaseDataset):
             data = data.take(config['test_size'])
 
         data = data.map(lambda image, kp: {'image': image, 'keypoints': kp})
-        data = data.map(pipeline.add_dummy_valid_mask)
+        data = data.map(pipeline.add_valid_mask)
 
         if config['cache_in_memory'] and not config['on-the-fly']:
             tf.logging.info('Caching data, fist access will take some time.')

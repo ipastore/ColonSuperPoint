@@ -276,6 +276,21 @@ def compute_valid_mask(image_shape, homography, erosion_radius=0):
                 [1, 1, 1, 1], [1, 1, 1, 1], 'SAME')[0, ..., 0] + 1.
     return tf.to_int32(mask)
 
+def compute_extra_mask(mask, homography):
+    """
+    Compute a boolean mask of the valid pixels resulting from an homography applied to the 
+    original mask shape. Pixels that are Flase correspond to excluded areas.
+
+    Arguments: 
+        mask: Original mask tensor: (H,W,1).
+        homography: Tensor of shape (B, 8) or (8,), where B is the batch size.
+    
+    Returns: a Tensor of type `tf.int32` and shape (H, W).
+    """
+    mask = tf.squeeze(mask, axis=-1)  # remove the C dimension
+    mask = H_transform(mask, homography, interpolation='NEAREST')
+
+    return tf.to_int32(mask)
 
 def warp_points(points, homography):
     """

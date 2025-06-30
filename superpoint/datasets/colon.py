@@ -286,7 +286,7 @@ class Colon(BaseDataset):
             kp = kp.map(lambda points: tf.reshape(points, [-1, 2]))
             data = tf.data.Dataset.zip((data, kp)).map(
                     lambda d, k: {**d, 'keypoints': k})
-            data = data.map(pipeline.add_dummy_valid_mask)
+            data = data.map(pipeline.add_valid_mask)
 
         # Keep only the first elements for validation
         if split_name == 'validation':

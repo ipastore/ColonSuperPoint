@@ -4,7 +4,7 @@ import numpy as np
 
 from superpoint.datasets.utils import photometric_augmentation as photaug
 from superpoint.models.homographies import (sample_homography, compute_valid_mask,
-                                            warp_points, filter_points)
+                                            warp_points, filter_points, compute_extra_mask)
 
 
 def parse_primitives(names, all_primitives):
@@ -43,8 +43,13 @@ def homographic_augmentation(data, add_homography=False, **config):
         homography = sample_homography(image_shape, **config['params'])[0]
         warped_image = tf.contrib.image.transform(
                 data['image'], homography, interpolation='BILINEAR')
-        valid_mask = compute_valid_mask(image_shape, homography,
-                                        config['valid_border_margin'])
+        
+        mask = data.get('mask', None)
+        if mask is not None:
+            valid_mask = compute_extra_mask(mask, homography)
+        else:
+            valid_mask = compute_valid_mask(image_shape, homography,
+                                            config['valid_border_margin'])
 
         warped_points = warp_points(data['keypoints'], homography)
         warped_points = filter_points(warped_points, image_shape)
@@ -56,9 +61,17 @@ def homographic_augmentation(data, add_homography=False, **config):
     return ret
 
 
-def add_dummy_valid_mask(data):
-    with tf.name_scope('dummy_valid_mask'):
+def add_valid_mask(data):
+    with tf.name_scope('valid_mask'):
+        # Dummy mask for images without a mask
         valid_mask = tf.ones(tf.shape(data['image'])[:2], dtype=tf.int32)
+
+        # Mask if available
+        mask = data.get('mask', None)
+        if mask is not None:
+            mask = tf.squeeze(mask, axis=-1)  # remove C dim
+            valid_mask = tf.where(mask, valid_mask, tf.zeros_like(valid_mask))
+
     return {**data, 'valid_mask': valid_mask}
 
 
@@ -67,12 +80,7 @@ def add_keypoint_map(data):
         image_shape = tf.shape(data['image'])[:2]
         kp = tf.minimum(tf.to_int32(tf.round(data['keypoints'])), image_shape-1)
         kmap = tf.scatter_nd(
-                kp, tf.ones([tf.shape(kp)[0]], dtype=tf.int32), image_shape)
-        
-        mask = data.get('mask', None)
-        if mask is not None:
-            kmap = tf.where(mask, kmap, tf.zeros_like(kmap))
-
+                kp, tf.ones([tf.shape(kp)[0]], dtype=tf.int32), image_shape)        
     return {**data, 'keypoint_map': kmap}
 
 
