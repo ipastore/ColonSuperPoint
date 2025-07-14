@@ -287,7 +287,8 @@ def compute_extra_mask(mask, homography):
     
     Returns: a Tensor of type `tf.int32` and shape (H, W).
     """
-    mask = tf.squeeze(mask, axis=-1)  # remove the C dimension
+    # mask = tf.squeeze(mask, axis=-1)  # remove the C dimension
+    mask = tf.cast(mask, tf.float32)
     mask = H_transform(mask, homography, interpolation='NEAREST')
 
     return tf.to_int32(mask)

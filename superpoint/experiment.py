@@ -68,6 +68,14 @@ def get_num_gpus():
 
 @contextmanager
 def _init_graph(config, with_dataset=False):
+
+    # # Add memory configuration
+    tf_config = tf.ConfigProto()
+    tf_config.gpu_options.allow_growth = True
+    tf_config.gpu_options.per_process_gpu_memory_fraction = 0.99
+    tf.keras.backend.set_session(tf.Session(config=tf_config))
+    
+
     set_seed(config.get('seed', int.from_bytes(os.urandom(4), byteorder='big')))
     n_gpus = get_num_gpus()
     logging.info('Number of GPUs detected: {}'.format(n_gpus))

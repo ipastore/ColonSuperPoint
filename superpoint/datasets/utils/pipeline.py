@@ -69,7 +69,7 @@ def add_valid_mask(data):
         # Mask if available
         mask = data.get('mask', None)
         if mask is not None:
-            mask = tf.squeeze(mask, axis=-1)  # remove C dim
+            # mask = tf.squeeze(mask, axis=-1)  # remove C dim
             valid_mask = tf.where(mask, valid_mask, tf.zeros_like(valid_mask))
 
     return {**data, 'valid_mask': valid_mask}
@@ -122,8 +122,9 @@ def colonoscopy_preprocess(image, **config):
     Returns:
         Processed image tensor
     """
-    # Center crop to standardized dimensions (994, 1344)
-    target_height = 992
+    # Center crop to standardized dimensions (992, 1344)
+    # target_height = 992 # this was modified to be able to divide by 2,4 and 8 and mantain the rule of being multiple of 8
+    target_height = 960
     target_width = 1344
 
     # Calculate center crop offsets
@@ -141,6 +142,7 @@ def colonoscopy_preprocess(image, **config):
 
     # Optionally resize to half size
     if config.get('half_resolution', False):
+        #hardocded to 4 for OOM, BUG?
         new_height = target_height // 2
         new_width = target_width // 2
         image = tf.image.resize_images(

@@ -38,7 +38,9 @@ class Coco(BaseDataset):
     }
 
     def _init_dataset(self, **config):
-        base_path = Path(DATA_PATH, 'COCO/train2014/')
+        base_path = Path(config.get('image_path', None))
+        if base_path is None:
+            base_path = Path(DATA_PATH, 'COCO/train2014/')
         image_paths = list(base_path.iterdir())
         if config['truncate']:
             image_paths = image_paths[:config['truncate']]

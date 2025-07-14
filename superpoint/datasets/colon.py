@@ -15,7 +15,7 @@ class Colon(BaseDataset):
         'preprocessing': {
             'use_colonoscopy_preprocess': True,
             'half_resolution': False,  # Set to true when you want half resolution
-            'camera_mask_path': '/home/student/ColonSuperPoint/ColonExperiments/datasets/endomapper_train/33/camera_mask.png',
+            'camera_mask_path': './ColonExperiments/datasets/endomapper_train/33/camera_mask.png',
         },
         'num_parallel_calls': 10,
         'augmentation': {

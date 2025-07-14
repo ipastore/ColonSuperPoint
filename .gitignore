@@ -14,3 +14,4 @@ ColonExperiments/experiments/*
 weights/*
 .github/instructions/instructions.instructions.md
 weights/superpoint_v6_from_tf.pth
+ColonExperiments/saved_models/*

@@ -1,12 +1,17 @@
 data:
-    name: 'coco'
-    image_path: '/home/student/ColonSuperPoint/ColonExperiments/datasets/dataset_001_002/images_subsampled/'
+    name: 'colon' # 'coco', 'colon'
+    image_path: './ColonExperiments/datasets/endomapper_train/toy_33/images'
     cache_in_memory: false
-    validation_size: 100   
-    labels: outputs/baseline_seq_001_002_labels
+    preprocessing:
+        resize: [120, 168] # [240, 320] [480,672] [240, 336], [120, 168]
+        use_colonoscopy_preprocessing: true
+        half_resolution: true # maybe OOM with RTX 2080 Ti
+        camera_mask_path: './ColonExperiments/datasets/endomapper_train/toy_33/camera_mask.png'
+    validation_size: 5
+    labels: outputs/toy_33_half
     augmentation:
         photometric:
-            enable: true
+            enable: false  # set to false for overfitting in first test
             primitives: [
                 'random_brightness', 'random_contrast', 'additive_speckle_noise',
                 'additive_gaussian_noise', 'additive_shade', 'motion_blur']
@@ -17,8 +22,8 @@ data:
                 additive_speckle_noise: {prob_range: [0, 0.0035]}
                 additive_shade:
                     transparency_range: [-0.5, 0.5]
-                    kernel_size_range: [100, 150]
-                motion_blur: {max_kernel_size: 3}
+                    kernel_size_range: [100, 150] 
+                motion_blur: {max_kernel_size: 3} # si
         homographic:
             enable: false  # not implemented
     warped_pair:
@@ -47,5 +52,5 @@ model:
     detection_threshold: 0.001
     nms: 4
     # top_k: 600
-train_iter: 600000
+train_iter: 2000
 validation_interval: 5000

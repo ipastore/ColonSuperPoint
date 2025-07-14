@@ -278,7 +278,9 @@ class BaseModel(metaclass=ABCMeta):
         sess_config = tf.ConfigProto(device_count={'GPU': self.n_gpus},
                                      allow_soft_placement=True)
         sess_config.gpu_options.allow_growth = True
+        sess_config.gpu_options.per_process_gpu_memory_fraction = 0.99
         self.sess = tf.Session(config=sess_config)
+        tf.keras.backend.set_session(self.sess)
 
         # Register tf dataset handles
         if self.datasets:

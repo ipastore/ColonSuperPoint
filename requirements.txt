@@ -1,5 +1,5 @@
 # tensorflow-gpu==1.12
-tensorflow==1.13
+# tensorflow==1.13
 numpy
 scipy
 opencv-python==3.4.2.16
@@ -8,3 +8,4 @@ tqdm
 pyyaml
 flake8
 jupyter
+absl-py==1.1.0

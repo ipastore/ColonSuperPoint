@@ -24,18 +24,18 @@ def display(d):
     return img
 
 output_root_dir = 'warped_pairs'
-output_dir = f'{output_root_dir}/baseline_33_labels_rodriguez_masked_kernel5_iterations10'
+output_dir = f'{output_root_dir}/toy_33_8th'
 
 os.makedirs(output_dir, exist_ok=True)
 
 
 config = {
-    'labels': f'/home/student/ColonSuperPoint/ColonExperiments/experiments/outputs/baseline_33_labels_rodriguez_masked_kernel5_iterations10',
-    'image_path': '/home/student/ColonSuperPoint/ColonExperiments/datasets/endomapper_train/33/images',
+    'labels': f'/home/student/ColonSuperPoint/ColonExperiments/experiments/outputs/toy_33_8th',
+    'image_path': '/home/student/ColonSuperPoint/ColonExperiments/datasets/endomapper_train/toy_33/images',
     'preprocessing':{
         'use_colonoscopy_preprocess': True,
-        'half_resolution': False,
-        'camera_mask_path': '/home/student/ColonSuperPoint/ColonExperiments/datasets/endomapper_train/33/camera_mask.png',
+        'half_resolution': True,
+        'camera_mask_path': '/home/student/ColonSuperPoint/ColonExperiments/datasets/endomapper_train/toy_33/camera_mask.png',
     },
     'truncate': 50,
     'augmentation' : {

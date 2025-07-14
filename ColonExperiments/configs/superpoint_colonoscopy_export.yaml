@@ -1,12 +1,13 @@
 data:
     name: 'colon'
-    image_path: '/home/student/ColonSuperPoint/ColonExperiments/datasets/endomapper_train/33/images'
-    validation_size: 0
+    image_path: './ColonExperiments/datasets/endomapper_train/toy_33/images'
+    # validation_size: 0
     cache_in_memory: false
     preprocessing:
+        # resize: [240, 320]
         use_colonoscopy_preprocessing: true
-        half_resolution: false
-        camera_mask_path: '/home/student/ColonSuperPoint/ColonExperiments/datasets/endomapper_train/33/camera_mask.png'
+        half_resolution: true # maybe OOM with RTX 2080 Ti
+        camera_mask_path: './ColonExperiments/datasets/endomapper_train/toy_33/camera_mask.png'
 model: 
     name: 'super_point'
     batch_size: 5
@@ -15,7 +16,7 @@ model:
     nms: 4
     # top_k: 600
     homography_adaptation:
-        num: 100
+        num: 10
         aggregation: 'sum'
         filter_counts: 0
         valid_border_margin: 3
