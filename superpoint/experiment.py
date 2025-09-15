@@ -115,7 +115,7 @@ def _cli_train(config, output_dir, args):
 def _cli_eval(config, output_dir, args):
     # Load model config from previous experiment
     with open(os.path.join(output_dir, 'config.yml'), 'r') as f:
-        model_config = yaml.load(f)['model']
+        model_config = yaml.load(f, Loader=yaml.Loader)['model']
     model_config.update(config.get('model', {}))
     config['model'] = model_config
 
